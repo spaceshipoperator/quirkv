@@ -1,4 +1,4 @@
 quirkv
 ======
 
-save a query accessible via a url, run your query, get your data via a URL, edit your query...maybe some parameters
+save a query, hit a URL to run your query and get your data in CSV, edit your query...maybe some parameters
