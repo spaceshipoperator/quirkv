@@ -1,0 +1,8 @@
+[
+  {
+    "queries": {
+      "type": "sqllite",
+      "location": "./data/queries.db",
+    }
+  }
+]
