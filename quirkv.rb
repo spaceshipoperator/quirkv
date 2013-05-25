@@ -45,13 +45,26 @@ get '/' do
 end
 
 # /d new data source, :name edit, type, parameters
-get '/d/?:did?' do
+get '/d/?:name?' do
+  if params[:name] then
+    @data_source =  data_sources.first{|e| e["name"] == params[:name]}
+    puts @data_source
+  else
+    @data_source = {"name"=> "", "type"=> "", "parameters" => {}}
+  end
   
   haml :dform
 end  
 
 post '/dsave' do
-  puts 'saved teh data source, yay'
+  # get all the data sources
+
+  # if #{params[:name]} exists, pop it out and replace it
+
+  # otherwise, just append this one to the list
+  puts "foo, #{params[:name]}"
+  puts "bar, #{params[:type]}"
+  puts "baz, #{params[:parameters].to_s}"
   redirect back
 end
 
@@ -91,25 +104,33 @@ __END__
  
 @@ dform
 %html
-  %h2 add or edit a data source
-  %form#dform{:action => "/dsave", :method => "post"}
-    %fieldset
-      %ol
-        %li
-          %label{:for => "name"} name:
-          %input{:type => "text", :name => "name", :class => "text"}
-        %li
-          %label{:for => "type"} type:
-          %input{:type => "text", :name => "type", :class => "text"}
-        %li
-          %label{:for => "parameters"} parameters:
-          %textarea{:name => "parameters"}
-      %input{:type => "submit", :value => "save", :class => "button"}
+  %head
+    :javascript
+      function toggleNameReadOnly() {
+        var dsname = document.getElementById("dsname");
+        if (dsname.value.length > 0) {
+          dsname.readOnly=true;    
+        }; 
+      };
+  %body{:onload => "toggleNameReadOnly()"}
+    %h2 add or edit a data source
+    %form#dform{:action => "/dsave", :method => "post"}
+      %fieldset
+        %ul
+          %li
+            %label{:for => "name"} name:
+            %input{:id => "dsname", :type => "text", :name => "name", :class => "text", :value => @data_source["name"]}
+          %li
+            %label{:for => "type"} type:
+            %input{:type => "text", :name => "type", :class => "text", :value => @data_source["type"]}
+          %li
+            %label{:for => "parameters"} parameters:
+            %textarea{:name => "parameters"}= @data_source["parameters"].to_s
+        %input{:type => "submit", :value => "save", :class => "button"}
     
- 
 @@ qform
 %html
-  %h2 add or edit a query form
+  %h2 add or edit a query 
   %form#qform{:action => "/qsave", :method => "post"}
     %fieldset
       %ol
