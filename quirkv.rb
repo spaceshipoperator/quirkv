@@ -47,14 +47,26 @@ end
 # /d new data source, :name edit, type, parameters
 get '/d/?:did?' do
   
+  haml :dform
 end  
+
+post '/dsave' do
+  puts 'saved teh data source, yay'
+  redirect back
+end
 
 # /q new query, :qid edit, data source name, description, query text
 get '/q/?:qid?' do
   # if :qid, get the info from the queries database
   # otherwise initialize @dsname, @desc, @txt
   
+  haml :qform
 end  
+
+post '/qsave' do
+  puts 'yay, saved teh query'
+  redirect back
+end
 
 # /e/:qid execute query return data (CSV, JSON)
 get '/e/:qid' do
@@ -79,9 +91,35 @@ __END__
  
 @@ dform
 %html
-  %h2 data source form
+  %h2 add or edit a data source
+  %form#dform{:action => "/dsave", :method => "post"}
+    %fieldset
+      %ol
+        %li
+          %label{:for => "name"} name:
+          %input{:type => "text", :name => "name", :class => "text"}
+        %li
+          %label{:for => "type"} type:
+          %input{:type => "text", :name => "type", :class => "text"}
+        %li
+          %label{:for => "parameters"} parameters:
+          %textarea{:name => "parameters"}
+      %input{:type => "submit", :value => "save", :class => "button"}
+    
  
 @@ qform
 %html
-  %h2 query form
-    
+  %h2 add or edit a query form
+  %form#qform{:action => "/qsave", :method => "post"}
+    %fieldset
+      %ol
+        %li
+          %label{:for => "dsname"} data source name:
+          %input{:type => "text", :name => "dsname", :class => "text"}
+        %li
+          %label{:for => "desc"} description:
+          %input{:type => "text", :name => "desc", :class => "text"}
+        %li
+          %label{:for => "qtext"} query text:
+          %textarea{:name => "qtext"}
+      %input{:type => "submit", :value => "save", :class => "button"}
