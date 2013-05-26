@@ -47,8 +47,7 @@ end
 # /d new data source, :name edit, type, parameters
 get '/d/?:name?' do
   if params[:name] then
-    @data_source =  data_sources.first{|e| e["name"] == params[:name]}
-    puts @data_source
+    @data_source =  data_sources.select{|e| e["name"] == params[:name]}[0]
   else
     @data_source = {"name"=> "", "type"=> "", "parameters" => {}}
   end
@@ -57,15 +56,24 @@ get '/d/?:name?' do
 end  
 
 post '/dsave' do
-  # get all the data sources
+  # NOTE: brittle code here, you can really muck up your config file
+  # or crash the app if you aren't careful with what goes into the form inputs
 
-  # if #{params[:name]} exists, pop it out and replace it
+  # get all the data sources
+  # if #{params[:name]} exists, pop it out and we'll replace it
+  nd = data_sources.delete_if{|e| e["name"] == params[:name]}
 
   # otherwise, just append this one to the list
-  puts "foo, #{params[:name]}"
-  puts "bar, #{params[:type]}"
-  puts "baz, #{params[:parameters].to_s}"
-  redirect back
+  n = {
+    "name" => params[:name],
+    "type" => params[:type],
+    "parameters" => eval(params[:parameters])
+    }
+
+  nd << n
+
+  File.open("config/data_sources.json", "w"){|f| f.write(JSON.pretty_generate(nd))}
+  redirect to('/')
 end
 
 # /q new query, :qid edit, data source name, description, query text
