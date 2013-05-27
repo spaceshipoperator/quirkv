@@ -12,21 +12,34 @@ helpers do
     JSON.parse(IO.read("config/data_sources.json"))
   end
 
-  def get_query(qid)
-    q = "select * from queries where qid = '#{qid}';"
-    qdb = data_sources.first{|e| e["name"] == "queries"}
-    case qdb["type"]
+  def query_database()
+    ds = data_sources.first{|e| e["name"] == "queries"}
+    case ds["type"]
       when "sqllite"
-        db = SQLite3::Database.open "#{qdb["parameters"]["location"]}"
-        results = db.execute(q)
+        qdb = SQLite3::Database.open "#{ds["parameters"]["location"]}"
       when "mssql"
         # do something else...
       else
         # fix your config file?
       end
-    results
+    qdb
   end
-  
+
+  def get_query(qid)
+    q = "select * from queries where qid = '#{qid}';"
+    query_database.execute(q)
+  end
+
+  def save_query(qid, dsname, desc, qtext)
+    # for now, a heavy-handed kind of upsert
+    s =  "insert or replace into queries values ( "
+    s << "'#{qid}', '#{dsname}', '#{desc}', '#{qtext}' ); "
+
+    results = query_database.execute(s)
+    puts "foobar: #{results.to_s}"
+
+    qid
+  end
 end
 
 # / index, present user with "new data source, query" and list data sources, queries
@@ -104,17 +117,12 @@ post '/qsave' do
   # NOTE: maybe we should be able to run the query
   # before we save it to the database..
 
-  if (params[:qid].empty?) then
-    qid = SecureRandom.hex(3)
-  end
-
-  # for now, a heavy-handed kind of upsert
-  s =  "insert or replace into queries values ( "
-  s << "'#{qid || params[:qid]}', '#{params[:dsname]}', "
-  s << "'#{params[:desc]}', '#{params[:qtext]}' ); "
-
-  puts "foo: #{s}"
-  redirect back
+  qid = params[:qid].empty? ? SecureRandom.hex(3) : params[:qid]
+  
+  r = save_query(qid, params[:dsname], params[:desc], params[:qtext])
+  
+  puts "foo: #{qid}"
+  redirect to("/q/#{qid}")
 end
 
 # /e/:qid execute query return data (CSV, JSON)
