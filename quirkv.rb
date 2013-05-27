@@ -36,7 +36,7 @@ helpers do
     s =  "insert or replace into queries values ( "
     s << "'#{qid}', '#{dsname}', '#{desc}', '#{qtext}' ); "
 
-    results = query_database('queries').execute(q)
+    results = query_database('queries').execute(s)
 
     qid
   end
