@@ -5,6 +5,7 @@ require 'stringio'
 require 'haml'
 require 'json'
 require 'sqlite3'
+require 'securerandom'
 
 helpers do
   def data_sources()
@@ -99,6 +100,20 @@ end
 
 post '/qsave' do
   puts 'yay, saved teh query'
+
+  # NOTE: maybe we should be able to run the query
+  # before we save it to the database..
+
+  if (params[:qid].empty?) then
+    qid = SecureRandom.hex(3)
+  end
+
+  # for now, a heavy-handed kind of upsert
+  s =  "insert or replace into queries values ( "
+  s << "'#{qid || params[:qid]}', '#{params[:dsname]}', "
+  s << "'#{params[:desc]}', '#{params[:qtext]}' ); "
+
+  puts "foo: #{s}"
   redirect back
 end
 
@@ -154,6 +169,7 @@ __END__
   %h2 add or edit a query 
   %form#qform{:action => "/qsave", :method => "post"}
     %fieldset
+      %input{:type=>"hidden", :name => :qid, :value => @query[0]}
       %ol
         %li
           %label{:for => "dsname"} data source name:
