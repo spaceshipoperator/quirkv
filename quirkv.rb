@@ -80,6 +80,19 @@ end
 get '/q/?:qid?' do
   # if :qid, get the info from the queries database
   # otherwise initialize @dsname, @desc, @txt
+  q = nil
+  if params[:qid] then
+    # should only get one query record back with the following 
+    gq = get_query("#{params[:qid]}")
+    if (gq.length == 1) then
+      q = gq[0]
+    end
+  end
+
+  # [qid, dsname, desc, qtext]
+  @query = q || [nil,nil,nil,nil]
+
+  puts @query.to_s
   
   haml :qform
 end  
@@ -144,11 +157,12 @@ __END__
       %ol
         %li
           %label{:for => "dsname"} data source name:
-          %input{:type => "text", :name => "dsname", :class => "text"}
+          %input{:type => "text", :name => "dsname", :class => "text", :value => @query[1]}
         %li
           %label{:for => "desc"} description:
-          %input{:type => "text", :name => "desc", :class => "text"}
+          %input{:type => "text", :name => "desc", :class => "text", :value => @query[2]}
         %li
           %label{:for => "qtext"} query text:
-          %textarea{:name => "qtext"}
+          %textarea{:name => "qtext"}= @query[3]
       %input{:type => "submit", :value => "save", :class => "button"}
+
