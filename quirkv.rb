@@ -12,22 +12,23 @@ helpers do
     JSON.parse(IO.read("config/data_sources.json"))
   end
 
-  def query_database()
-    ds = data_sources.first{|e| e["name"] == "queries"}
+  def query_database(dsname)
+    ds = data_sources.first{|e| e["name"] == dsname}
     case ds["type"]
       when "sqllite"
-        qdb = SQLite3::Database.open "#{ds["parameters"]["location"]}"
+        db = SQLite3::Database.open "#{ds["parameters"]["location"]}"
       when "mssql"
         # do something else...
       else
         # fix your config file?
       end
-    qdb
+
+    db
   end
 
   def get_query(qid)
     q = "select * from queries where qid = '#{qid}';"
-    query_database.execute(q)
+    query_database('queries').execute(q)
   end
 
   def save_query(qid, dsname, desc, qtext)
@@ -35,8 +36,7 @@ helpers do
     s =  "insert or replace into queries values ( "
     s << "'#{qid}', '#{dsname}', '#{desc}', '#{qtext}' ); "
 
-    results = query_database.execute(s)
-    puts "foobar: #{results.to_s}"
+    results = query_database('queries').execute(q)
 
     qid
   end
@@ -106,14 +106,10 @@ get '/q/?:qid?' do
   # [qid, dsname, desc, qtext]
   @query = q || [nil,nil,nil,nil]
 
-  puts @query.to_s
-  
   haml :qform
 end  
 
 post '/qsave' do
-  puts 'yay, saved teh query'
-
   # NOTE: maybe we should be able to run the query
   # before we save it to the database..
 
@@ -121,17 +117,16 @@ post '/qsave' do
   
   r = save_query(qid, params[:dsname], params[:desc], params[:qtext])
   
-  puts "foo: #{qid}"
   redirect to("/q/#{qid}")
 end
 
 # /e/:qid execute query return data (CSV, JSON)
 get '/e/:qid' do
-  @results = get_query("#{params[:qid]}").to_s
-  # execute_query(q)
-  # connect to the queries database, get the dsname and qtext given the qid
-  # run the query, deliver the results
-  @results
+  gq = get_query("#{params[:qid]}")[0]
+  
+  @results = query_database(gq[1]).execute(gq[3])
+  
+  @results.to_s
 end  
 
 __END__
