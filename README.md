@@ -22,14 +22,16 @@ then in your browser at http://localhost:4567
   execute query return data (CSV, JSON)
 
 to do:
-- save query to queries database, uniquely name, accessible via URL
-- add new data source/query links to index page
-- add codemirror text area to add/edit query form
-- establish a connections to different database flavors(sqllite, mssql, pgsql, odbc, etc)
+- [X] save query to queries database, uniquely name, accessible via URL
+- [X] add new data source/query links to index page
 - allow for queries to include parameters that can be provided in the URL (/e/:qid/:p1/:pN)
+- add codemirror text area to add/edit query form
 - better UI stuff, dropdown list for data source types, CSS-love on the forms 
-- visualizations (nvd3, d3, high charts...)
+- (rake) task to create queries.db && create table queries (qid not null primary key, dsname, desc, qtext)
+- establish a connections to different database flavors(sqllite, mssql, pgsql, odbc, etc)
+- visualizations (nvd3, d3, high charts...), simple configurations wrapping one or more saved queries (following conventions)
+- export/import from/to ethercalc
 - query tagging
-- users, logins, query permissions, etc
+- users, logins, query permissions, sharing, etc
 - allow for collaborative editing
 - ember-table maybe

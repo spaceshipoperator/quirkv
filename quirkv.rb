@@ -121,8 +121,14 @@ post '/qsave' do
 end
 
 # /e/:qid execute query return data (CSV, JSON)
-get '/e/:qid' do
-  gq = get_query("#{params[:qid]}")[0]
+get '/e/:q*' do
+  puts "Hello, #{params[:captures].to_s}!"
+
+  qid, *p = params[:captures]
+
+  puts "foo #{p}"
+  
+  gq = get_query(qid)[0]
   
   @results = query_database(gq[1]).execute(gq[3])
   
