@@ -135,11 +135,19 @@ __END__
 %html
   %h2 welcome to quirkv
   %h3 data sources
+  %a{:href => "d"}= "new data source"
+  %br
+  %br
   - @data_sources.each do |e|
     %a{:href => "d/#{e["name"]}"}= e["name"]
+    %br
   %h3 queries
+  %a{:href => "q"}= "new query"
+  %br
+  %br
   - @queries.each do |e|
     %a{:href => "q/#{e[0]}"}= e[2]
+    %br
  
 @@ dform
 %html
@@ -172,7 +180,7 @@ __END__
   %h2 add or edit a query 
   %form#qform{:action => "/qsave", :method => "post"}
     %fieldset
-      %input{:type=>"hidden", :name => :qid, :value => @query[0]}
+      %input{:type =>"hidden", :name => :qid, :value => @query[0]}
       %ol
         %li
           %label{:for => "dsname"} data source name:
@@ -184,4 +192,4 @@ __END__
           %label{:for => "qtext"} query text:
           %textarea{:name => "qtext"}= @query[3]
       %input{:type => "submit", :value => "save", :class => "button"}
-
+  %a{:href => "/e/#{@query[0]}", :style => "visibility:#{@query[0] ? "visible" : "hidden" };" } run query
