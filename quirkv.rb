@@ -114,23 +114,24 @@ post '/qsave' do
   # before we save it to the database..
 
   qid = params[:qid].empty? ? SecureRandom.hex(3) : params[:qid]
-  
+
   r = save_query(qid, params[:dsname], params[:desc], params[:qtext])
   
   redirect to("/q/#{qid}")
 end
 
-# /e/:qid execute query return data (CSV, JSON)
+# /e/:qid/p[1]..p[n] execute query return data (JSON array default)
 get '/e/:q*' do
-  puts "Hello, #{params[:captures].to_s}!"
+  qid, *a = params[:captures]
 
-  qid, *p = params[:captures]
+  p = a[0].split("/")
 
-  puts "foo #{p}"
-  
   gq = get_query(qid)[0]
   
-  @results = query_database(gq[1]).execute(gq[3])
+  ds = gq[1]
+  q = eval("\"" + gq[3] + "\"")
+  
+  @results = query_database(ds).execute(q)
   
   @results.to_s
 end  
