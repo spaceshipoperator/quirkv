@@ -1,5 +1,11 @@
-quirkv
+quirkv - teh database destroyer
 ======
+
+don't take this too seriously.  Also, for your own safety and the safety of others, do not run this
+silly little web application on a server that is accessible by just anybody else.  Feel free to run
+it on your local host and ponder the possibilities of making it available to others.  Should you feel
+so moved, you might consider what it would take to make this thing a bit more robust, resilient to sql
+injection would be a good place to start.  Meanwhile, take it for what it's worth:
 
 a rudimentary query editor(hardly), runner, browser...itch-scratching toy
 
@@ -24,7 +30,7 @@ then in your browser at http://localhost:4567
 to do:
 - [X] save query to queries database, uniquely name, accessible via URL
 - [X] add new data source/query links to index page
-- allow for queries to include parameters that can be provided in the URL (/e/:qid/:p1/:pN)
+- [X] allow for queries to include parameters that can be provided in the URL (/e/:qid/:p1/:pN)
 - add codemirror text area to add/edit query form
 - better UI stuff, dropdown list for data source types, CSS-love on the forms 
 - (rake) task to create queries.db && create table queries (qid not null primary key, dsname, desc, qtext)

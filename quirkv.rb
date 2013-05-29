@@ -120,7 +120,7 @@ post '/qsave' do
   redirect to("/q/#{qid}")
 end
 
-# /e/:qid/p[1]..p[n] execute query return data (JSON array default)
+# /e/:qid/p[1]..p[n] execute query return data (a string that should be a legitimate JSON array)
 get '/e/:q*' do
   qid, *a = params[:captures]
 
@@ -184,19 +184,35 @@ __END__
     
 @@ qform
 %html
-  %h2 add or edit a query 
-  %form#qform{:action => "/qsave", :method => "post"}
-    %fieldset
-      %input{:type =>"hidden", :name => :qid, :value => @query[0]}
-      %ol
-        %li
-          %label{:for => "dsname"} data source name:
-          %input{:type => "text", :name => "dsname", :class => "text", :value => @query[1]}
-        %li
-          %label{:for => "desc"} description:
-          %input{:type => "text", :name => "desc", :class => "text", :value => @query[2]}
-        %li
-          %label{:for => "qtext"} query text:
-          %textarea{:name => "qtext"}= @query[3]
-      %input{:type => "submit", :value => "save", :class => "button"}
-  %a{:href => "/e/#{@query[0]}", :style => "visibility:#{@query[0] ? "visible" : "hidden" };" } run query
+  %head
+    %script{:type => "text/javascript", :src => "../js/vendor/codemirror/lib/codemirror.js"}
+    %link{:rel => "stylesheet", :href => "../js/vendor/codemirror/lib/codemirror.css"}
+    %script{:type => "text/javascript", :src => "../js/vendor/codemirror/mode/sql/sql.js"}
+    :javascript
+      function initCodeMirror() {
+        window.editor = CodeMirror.fromTextArea(document.getElementById('cmqtext'), {
+          mode: 'text/x-sql',
+          indentWithTabs: true,
+          smartIndent: true,
+          lineNumbers: true,
+          matchBrackets : true,
+          autofocus: true
+        });
+      };
+  %body{:onload => "initCodeMirror()"}
+    %h2 add or edit a query 
+    %form#qform{:action => "/qsave", :method => "post"}
+      %fieldset
+        %input{:type => "hidden", :name => :qid, :value => @query[0]}
+        %ol
+          %li
+            %label{:for => "dsname"} data source name:
+            %input{:type => "text", :name => "dsname", :class => "text", :value => @query[1]}
+          %li
+            %label{:for => "desc"} description:
+            %input{:type => "text", :name => "desc", :class => "text", :value => @query[2]}
+          %li
+            %label{:for => "qtext"} query text:
+            %textarea{:id => "cmqtext", :name => "qtext"}= @query[3]
+        %input{:type => "submit", :value => "save", :class => "button"}
+    %a{:href => "/e/#{@query[0]}", :style => "visibility:#{@query[0] ? "visible" : "hidden" };" } run query
