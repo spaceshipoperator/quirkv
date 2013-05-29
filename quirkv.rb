@@ -115,7 +115,7 @@ post '/qsave' do
 
   qid = params[:qid].empty? ? SecureRandom.hex(3) : params[:qid]
 
-  r = save_query(qid, params[:dsname], params[:desc], params[:qtext])
+  r = save_query(qid, params[:dsname], params[:desc], params[:qtext].gsub(/'/, "\'\'"))
   
   redirect to("/q/#{qid}")
 end
