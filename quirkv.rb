@@ -186,8 +186,16 @@ __END__
 %html
   %head
     %script{:type => "text/javascript", :src => "../js/vendor/codemirror/lib/codemirror.js"}
-    %link{:rel => "stylesheet", :href => "../js/vendor/codemirror/lib/codemirror.css"}
     %script{:type => "text/javascript", :src => "../js/vendor/codemirror/mode/sql/sql.js"}
+    %script{:type => "text/javascript", :src => "../js/vendor/slickgrid/lib/jquery-1.7.min.js"}
+    %script{:type => "text/javascript", :src => "../js/vendor/slickgrid/lib/jquery.event.drag-2.2.js"}
+    %script{:type => "text/javascript", :src => "../js/vendor/slickgrid/slick.core.js"}
+    %script{:type => "text/javascript", :src => "../js/vendor/slickgrid/slick.grid.js"}
+    %script{:type => "text/javascript", :src => "../js/loadResultsGrid.js"}
+    %link{:rel => "stylesheet", :href => "../js/vendor/codemirror/lib/codemirror.css"}
+    %link{:rel => "stylesheet", :href => "../js/vendor/slickgrid/slick.grid.css"}
+    %link{:rel => "stylesheet", :href => "../js/vendor/slickgrid/css/smoothness/jquery-ui-1.8.16.custom.css"}
+    %link{:rel => "stylesheet", :href => "../js/vendor/slickgrid/examples/examples.css"}
     :javascript
       function initCodeMirror() {
         window.editor = CodeMirror.fromTextArea(document.getElementById('cmqtext'), {
@@ -195,9 +203,14 @@ __END__
           indentWithTabs: true,
           smartIndent: true,
           lineNumbers: true,
-          matchBrackets : true,
+          matchBrackets: true,
           autofocus: true
         });
+
+        var qid = "#{@query[0]}";
+        if (qid.length > 0) {
+          r = loadResultsGrid(qid);
+        };
       };
   %body{:onload => "initCodeMirror()"}
     %h2 add or edit a query 
@@ -216,3 +229,4 @@ __END__
             %textarea{:id => "cmqtext", :name => "qtext"}= @query[3]
         %input{:type => "submit", :value => "save", :class => "button"}
     %a{:href => "/e/#{@query[0]}", :style => "visibility:#{@query[0] ? "visible" : "hidden" };" } run query
+    #slickGrid{:style =>"width:800px;height:600px"}
